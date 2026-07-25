@@ -11,8 +11,8 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Модель Gemini 1.5 Flash
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Модель Gemini 2.5 Flash
+model = genai.GenerativeModel("gemini-2.5-flash")
 
 # Flask-сервер для поддержки активности на Render
 app = Flask(__name__)
