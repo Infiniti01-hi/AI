@@ -11,7 +11,7 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
 genai.configure(api_key=GEMINI_API_KEY)
 
-# Модель Gemini 1.5 Flash (быстрая и бесплатная)
+# Модель Gemini 1.5 Flash
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 # Flask-сервер для поддержки активности на Render
@@ -42,13 +42,13 @@ def handle_prompt(message):
         # Отправка ответа
         bot.reply_to(message, response.text)
     except Exception as e:
-        print(f"Ошибка Gemini API: {e}")
-        bot.reply_to(message, "Не удалось получить ответ от ИИ. Попробуй позже.")
+        print(f"Ошибка Gemini API: {e}", flush=True)
+        bot.reply_to(message, f"Ошибка ИИ: {e}")
 
 if __name__ == "__main__":
     # Запуск фонового веб-сервера
     threading.Thread(target=run_flask, daemon=True).start()
     
     # Запуск бота
-    print("Бот успешно запущен...")
+    print("Бот успешно запущен...", flush=True)
     bot.polling(none_stop=True)
