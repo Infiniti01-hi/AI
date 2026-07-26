@@ -1,9 +1,17 @@
 import os
-import telebot
+import google.generativeai as genai
 from flask import Flask, request
+import telebot
 
 # Получаем токены из переменных окружения
 TOKEN = os.environ.get("BOT_TOKEN")
+GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
+
+# Настройка Gemini
+genai.configure(api_key=GEMINI_KEY)
+# Используем актуальную модель Gemini
+gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+
 bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
@@ -14,12 +22,16 @@ def send_welcome(message):
   bot.reply_to(message, "Здравствуйте, чем могу помочь?")
 
 
-# Обработчик обычных текстовых сообщений
+# Обработчик обычных текстовых сообщений (отправка в Gemini)
 @bot.message_handler(content_types=["text"])
 def handle_text(message):
-  # Здесь можно добавить логику ответа от Gemini или эхо-ответ для проверки
   user_text = message.text
-  bot.reply_to(message, f"Вы написали: {user_text}")
+  try:
+    # Запрос к искусственному интеллекту
+    response = gemini_model.generate_content(user_text)
+    bot.reply_to(message, response.text)
+  except Exception as e:
+    bot.reply_to(message, "Произошла ошибка при обращении к ИИ.")
 
 
 # Маршрут для вебхуков от Telegram
@@ -38,7 +50,7 @@ def index():
 
 
 if __name__ == "__main__":
-  # Настройка вебхука при старте (замени свой домен на render на актуальный)
+  # Настройка вебхука при старте
   bot.remove_webhook()
   bot.set_webhook(url=f"https://gemini-ai-2026.onrender.com/{TOKEN}")
 
